@@ -38,6 +38,10 @@ RUN set -x \
 #
 #   https://github.com/docker-library/openjdk/issues
 
+# Docker里运行Docker docker in docker(dind)
+# http://www.wantchalk.com/c/devops/docker/2017/05/24/docker-in-docer.html
+# docker（18）：使用 dind 镜像，用docker jenkins 构建docker 镜像。
+# https://blog.csdn.net/freewebsys/article/details/79756488
 #################### 以上生成 openjdk:8u171-jdk-alpine3.8 ###########################
 
 RUN apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils
@@ -133,4 +137,27 @@ USER root
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 ## ****************************** 参考资料 *****************************************
 ## 制作Docker Image: docker build -t idu/jenkins .
-## 启动容器：docker run --name jenkins -p 8080:8080 -p 50000:50000 --env JENKINS_SLAVE_AGENT_PORT=50000 idu/jenkins
+## 启动容器：docker run -d --name jenkins -p 8080:8080 -p 50000:50000 --env JENKINS_SLAVE_AGENT_PORT=50000 idu/jenkins
+## docker run -d \
+## --name jenkins \
+## --restart=always \
+## -p 5050:8080 \
+## -p 50000:50000 \
+## -v /var/jenkins_home:/var/jenkins_home \
+## -v /var/run/docker.sock:/var/run/docker.sock \
+## -v $(which docker):/usr/bin/docker \
+## idu/jenkins
+## 
+## 另一种启动方式
+## docker run -d \
+## --name jenkins \
+## --restart=always \
+## -p 5050:8080 \
+## -p 50000:50000 \
+## -v /var/jenkins_home:/var/jenkins_home \
+## -v /usr/local/jdk1.8.0_45:/usr/local/jdk \
+## -v /var/run/docker.sock:/var/run/docker.sock \
+## -v $(which docker):/var/bin/docker \
+## -v ~/.ssh:/root/.ssh \
+## idu/jenkins:latest
+
