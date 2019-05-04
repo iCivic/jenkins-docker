@@ -15,6 +15,9 @@ ENV LANG C.UTF-8
 
 # add a simple script that can auto-detect the appropriate JAVA_HOME value
 # based on whether the JDK or only the JRE is installed
+RUN echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/main' > /etc/apk/repositories \
+    && echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/community' >>/etc/apk/repositories
+	
 RUN { \
 		echo '#!/bin/sh'; \
 		echo 'set -e'; \
@@ -25,8 +28,8 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
 
-ENV JAVA_VERSION 8u171
-ENV JAVA_ALPINE_VERSION 8.171.11-r0
+ENV JAVA_VERSION 8u201
+ENV JAVA_ALPINE_VERSION 8.201.08-r1
 
 RUN set -x \
 	&& apk add --no-cache \
@@ -67,8 +70,8 @@ ENV JENKINS_SLAVE_AGENT_PORT ${agent_port}
 # https://www.jianshu.com/p/cd1636c94f9f
 # Docker openjdk-8-jdk-alpine 容器时间与jdk时区不同修改方法
 # https://www.cnblogs.com/solooo/p/7832117.html
-RUN echo 'http://mirrors.ustc.edu.cn/alpine/v3.5/main' > /etc/apk/repositories \
-    && echo 'http://mirrors.ustc.edu.cn/alpine/v3.5/community' >>/etc/apk/repositories \
+RUN echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/main' > /etc/apk/repositories \
+    && echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/community' >>/etc/apk/repositories \
     && apk add -U tzdata \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
