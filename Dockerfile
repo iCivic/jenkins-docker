@@ -28,8 +28,8 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
 
-ENV JAVA_VERSION 8u201
-ENV JAVA_ALPINE_VERSION 8.201.08-r1
+ENV JAVA_VERSION 8u212
+ENV JAVA_ALPINE_VERSION 8.212.04-r1
 
 RUN set -x \
 	&& apk add --no-cache \
@@ -145,10 +145,11 @@ RUN set -ex \
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 19.1
 
+COPY ./get-pip.py ./get-pip.py
 RUN set -ex; \
 	\
-	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
+#	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
+#	\
 	python get-pip.py \
 		--disable-pip-version-check \
 		--no-cache-dir \
