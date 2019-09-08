@@ -226,11 +226,11 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 # jenkins version being bundled in this docker image
 # https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/
 ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.138.1}
+ENV JENKINS_VERSION ${JENKINS_VERSION:-2.138.4}
 
 # jenkins.war checksum, download will be validated using it
-# sha256sum jenkins-war-2.138.1.war
-ARG JENKINS_SHA=ecb84b6575e86957b902cce5e68e360e6b0768b0921baa405e61d314239e5b27
+# sha256sum jenkins-war-2.138.4.war
+ARG JENKINS_SHA=053d2941d558092c934a0f95798ff2177170eecfffab27a46e30744cf12bc3da
 
 # Can be used to customize where jenkins.war get downloaded from
 ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
@@ -244,8 +244,13 @@ RUN chmod +x /usr/local/bin/jenkins.sh \
     && chmod +x /usr/local/bin/plugins.sh \
     && chmod +x /usr/local/bin/install-plugins.sh
 
-ENV JENKINS_UC https://updates.jenkins.io
-ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+
+# ENV JENKINS_UC https://updates.jenkins.io
+# ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+# jenkins 插件无法联网获取解决图文版
+# https://blog.csdn.net/lb876864380/article/details/79209333
+ENV JENKINS_UC=http://mirror.xmission.com/jenkins/updates/update-center.json
+ENV JENKINS_UC_EXPERIMENTAL=http://mirror.xmission.com/jenkins/updates/experimental
 RUN chown -R ${user} "$JENKINS_HOME" /usr/share/jenkins/ref
 
 ENV COPY_REFERENCE_FILE_LOG $JENKINS_HOME/copy_reference_file.log
@@ -260,7 +265,7 @@ EXPOSE ${agent_port}
 USER root
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 ## ****************************** 参考资料 *****************************************
-## 制作Docker Image: docker build -t idu/jenkins .
+## 制作Docker Image: docker build -t idu/jenkins:2.138.4 .
 ## 启动容器：docker run -d --name jenkins -p 8080:8080 -p 50000:50000 --env JENKINS_SLAVE_AGENT_PORT=50000 idu/jenkins
 ## docker run -d \
 ## --name jenkins \
