@@ -15,9 +15,12 @@ ENV LANG C.UTF-8
 
 # add a simple script that can auto-detect the appropriate JAVA_HOME value
 # based on whether the JDK or only the JRE is installed
-RUN echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/main' > /etc/apk/repositories \
-    && echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/community' >>/etc/apk/repositories
-	
+RUN echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/main/' > /etc/apk/repositories \
+    && echo 'http://mirrors.ustc.edu.cn/alpine/v3.8/community/' >>/etc/apk/repositories
+
+# RUN echo 'http://mirror.math.princeton.edu/pub/alpinelinux/v3.8/main' > /etc/apk/repositories \
+#     && echo 'http://mirror.math.princeton.edu/pub/alpinelinux/v3.8/community' >>/etc/apk/repositories
+
 RUN { \
 		echo '#!/bin/sh'; \
 		echo 'set -e'; \
@@ -31,8 +34,7 @@ ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openj
 ENV JAVA_VERSION 8u212
 ENV JAVA_ALPINE_VERSION 8.212.04-r1
 
-RUN set -x \
-	&& apk add --no-cache \
+RUN apk add --no-cache \
 		openjdk8="$JAVA_ALPINE_VERSION" \
 	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
@@ -108,6 +110,8 @@ RUN set -ex \
 		tk \
 		tk-dev \
 		zlib-dev \
+		dos2unix \
+		nginx \
 # add build deps before removing fetch deps in case there's overlap
 	&& apk del .fetch-deps \
 	\
@@ -226,11 +230,11 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 # jenkins version being bundled in this docker image
 # https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/
 ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.138.4}
+ENV JENKINS_VERSION ${JENKINS_VERSION:-2.193}
 
 # jenkins.war checksum, download will be validated using it
-# sha256sum jenkins-war-2.138.4.war
-ARG JENKINS_SHA=053d2941d558092c934a0f95798ff2177170eecfffab27a46e30744cf12bc3da
+# sha256sum jenkins-war-2.193.war
+ARG JENKINS_SHA=516d8fd3ef9a6c622079a0b200419f5c7039b3cc9de5d473410111b0f45c8985
 
 # Can be used to customize where jenkins.war get downloaded from
 ARG JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war
@@ -265,7 +269,7 @@ EXPOSE ${agent_port}
 USER root
 ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 ## ****************************** 参考资料 *****************************************
-## 制作Docker Image: docker build -t idu/jenkins:2.138.4 .
+## 制作Docker Image: docker build -t idu/jenkins:2.193 .
 ## 启动容器：docker run -d --name jenkins -p 8080:8080 -p 50000:50000 --env JENKINS_SLAVE_AGENT_PORT=50000 idu/jenkins
 ## docker run -d \
 ## --name jenkins \
@@ -289,4 +293,6 @@ ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 ## -v $(which docker):/var/bin/docker \
 ## -v ~/.ssh:/root/.ssh \
 ## idu/jenkins:latest
+## 
+## docker镜像创建 https://www.cnblogs.com/lobin/p/9266090.html
 
