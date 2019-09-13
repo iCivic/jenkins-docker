@@ -111,7 +111,6 @@ RUN set -ex \
 		tk-dev \
 		zlib-dev \
 		dos2unix \
-		nginx \
 # add build deps before removing fetch deps in case there's overlap
 	&& apk del .fetch-deps \
 	\
@@ -226,6 +225,7 @@ COPY jenkins.sh /usr/local/bin/jenkins.sh
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
 COPY plugins.sh /usr/local/bin/plugins.sh
 COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+COPY start-reverse-proxy.sh /usr/local/bin/start-reverse-proxy.sh
 
 # jenkins version being bundled in this docker image
 # https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/
@@ -246,8 +246,8 @@ RUN curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
   
 RUN chmod +x /usr/local/bin/jenkins.sh \
     && chmod +x /usr/local/bin/plugins.sh \
-    && chmod +x /usr/local/bin/install-plugins.sh
-
+    && chmod +x /usr/local/bin/install-plugins.sh \
+    && chmod +x /usr/local/bin/start-reverse-proxy.sh
 
 # ENV JENKINS_UC https://updates.jenkins.io
 # ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
